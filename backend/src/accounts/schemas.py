@@ -22,3 +22,14 @@ class UserCreate(UserBase):
 
 class UserInDB(UserBase):
     hashed_password: str
+
+class UserOut(UserBase):
+    id: int
+
+class UsersOut(BaseModel):
+    data: list[UserOut]
+    count: int
+
+class UserUpdate(UserCreate):
+    email: str | None = None
+    password: str | None = None
