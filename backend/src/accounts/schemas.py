@@ -33,3 +33,7 @@ class UsersOut(BaseModel):
 class UserUpdate(UserCreate):
     email: str | None = None
     password: str | None = None
+
+class UserUpdateMe(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
