@@ -3,8 +3,9 @@ from typing import Any
 from pydantic import (
     AnyHttpUrl,
     PostgresDsn,
-    ValidationInfo,
+    EmailStr,
     field_validator,
+    ValidationInfo,
 )
 from pydantic_settings import BaseSettings
 
@@ -41,6 +42,34 @@ class Settings(BaseSettings):
             password=info.data.get("POSTGRES_PASSWORD"),
             host=info.data.get("POSTGRES_SERVER"),
             path=f"{info.data.get('POSTGRES_DB') or ''}",
+        )
+    
+    SMTP_TLS: bool = False
+    SMTP_PORT: int | None = None
+    SMTP_HOST: str | None = None
+    SMTP_USER: str | None = None
+    SMTP_PASSWORD: str | None = None
+    EMAILS_FROM_EMAIL: EmailStr | None = None
+    EMAILS_FROM_NAME: str | None = None
+    EMAIL_TEST_USER: EmailStr = "test@example.com"
+
+
+    @field_validator("EMAILS_FROM_NAME")
+    def get_project_name(cls, v: str | None, info: ValidationInfo) -> str:
+        if not v:
+            return info.data["PROJECT_NAME"]
+        return v
+
+    EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
+    EMAIL_TEMPLATES_DIR: str = "static/email_templates"
+    EMAILS_ENABLED: bool = False
+
+    @field_validator("EMAILS_ENABLED", mode="before")
+    def get_emails_enabled(cls, v: bool, info: ValidationInfo) -> bool:
+        return bool(
+            info.data.get("SMTP_HOST")
+            and info.data.get("SMTP_PORT")
+            and info.data.get("EMAILS_FROM_EMAIL")
         )
 
 settings = Settings()

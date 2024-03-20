@@ -30,7 +30,7 @@ if settings.BACKEND_CORS_ORIGINS:
 
 # Register all routes here
 api_router = APIRouter()
-api_router.include_router(auth_routes.router, tags=["login"])
+api_router.include_router(auth_routes.router, prefix="/auth", tags=["auth"])
 api_router.include_router(user_routes.router, prefix="/users", tags=["users"])
 
 

@@ -1,33 +1,20 @@
-from typing import Annotated
-from fastapi import APIRouter, HTTPException, Depends
-from fastapi.security import OAuth2PasswordRequestForm
 
-from src.core.dependecies import SessionDep
-from src.accounts.models import User
-from src.core.security import create_access_token
-
-from .schemas import Token
-from . import services
+from fastapi import APIRouter
+from src.accounts.schemas import UserCreate, UserRead, UserCreatePublic
+from src.accounts.services import fastapi_users
+from .services import auth_backend
 
 router = APIRouter()
 
-@router.post("/login/access-token")
-async def login_access_token(
-    session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
-) -> Token:
-    """
-    OAuth2 compatible token login, get an access token for future requests
-    """
-    user: User = await services.authenticate(
-        session=session, email=form_data.username, password=form_data.password
-    )
-    if not user:
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
-    elif not user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
-
-    return Token(
-        access_token = create_access_token(
-            user.id
-        )
-    )
+router.include_router(
+    fastapi_users.get_auth_router(auth_backend), prefix="/jwt"
+)
+router.include_router(
+    fastapi_users.get_register_router(UserRead, UserCreatePublic)
+)
+router.include_router(
+    fastapi_users.get_reset_password_router()
+)
+router.include_router(
+    fastapi_users.get_verify_router(UserRead)
+)

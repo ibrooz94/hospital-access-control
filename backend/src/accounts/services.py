@@ -1,71 +1,55 @@
-from fastapi import HTTPException, status
-from sqlalchemy import select, update
-from sqlalchemy.ext.asyncio import AsyncSession as Session
+import uuid
+from typing import Optional
+from fastapi import Depends, Request
+from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin
+from fastapi_users.jwt import generate_jwt
+from fastapi_users.db import SQLAlchemyUserDatabase
 
-from src.core.security import hash_password
-from .schemas import UserCreate, UserUpdate, UserUpdateMe
+from src.core.config import settings
+from src.core.dependecies import get_user_db
+from src.authentication.services import auth_backend
 from .models import User
-from fastapi_users import FastAPIUsers
+from src.utils import send_new_account_email
 
-async def create_user(session:Session, request:UserCreate) -> User:
-    new_user = User(**request.model_dump(exclude="password"), hashed_password=hash_password(request.password) ) 
-    session.add(new_user)
-    await session.commit()
-    await session.refresh(new_user)
-
-    return new_user
-
-async def get_user_by_email(session: Session, email: str) -> User | None:
-    statement = select(User).where(User.email == email)
-    result = await session.execute(statement)
-    session_user = result.scalar()
-    return session_user
-
-async def get_user_by_id(session: Session, user_id:int) -> User | None:
-    statement = select(User).where(User.id == user_id)
-    user = await session.scalar(statement)
-    return user
-
-async def update_user_pythonic(session: Session, user_id: int, user_in: UserUpdate):
-    user = await get_user_by_id(session, user_id)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with ID {user_id} not found"
-        )
-
-    user_data = user_in.model_dump(exclude_unset=True)
-    if not user_data:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid data",
-        )
-
-    for field, value in user_data.items():
-        if field == 'password':
-            user.hashed_password = hash_password(value)
-        setattr(user, field, value)
-
-    await session.commit()
-    await session.refresh(user)
-    return user
-
-async def update_user(session: Session, user_id: int, user_in: UserUpdate):
+#TODO Remove print statements
+class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
+    reset_password_token_secret = settings.SECRET_KEY
+    verification_token_secret = settings.SECRET_KEY
+    verification_token_lifetime_seconds = settings.ACCESS_TOKEN_EXPIRE_MINUTES
     
-    user_data = user_in.model_dump(exclude_unset=True)
-    if not user_data:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data")
+    async def on_after_register(self, user: User, request: Optional[Request] = None):
+        print(f"User {user.id} has registered.")
 
-    if "password" in user_data:
-        password = user_data.pop("password") 
-        user_data['hashed_password'] = hash_password(password)
+        token_data = {
+            "sub": str(user.id),
+            "email": user.email,
+            "aud": self.verification_token_audience,
+        }
+        token = generate_jwt(
+            token_data,
+            self.verification_token_secret,
+            self.verification_token_lifetime_seconds,
+        )
 
-    stmt = update(User).where(User.id == user_id).values(user_data).returning(User)
-    updated_user = (await session.execute(stmt)).scalar_one_or_none()
+        send_new_account_email(user.email, token)
 
-    await session.commit()
-    await session.refresh(updated_user)
+    async def on_after_forgot_password(
+        self, user: User, token: str, request: Optional[Request] = None
+    ):
+        print(f"User {user.id} has forgot their password. Reset token: {token}")
 
-    return updated_user
+    async def on_after_request_verify(
+        self, user: User, token: str, request: Optional[Request] = None
+    ):
+        print(f"Verification requested for user {user.id}. Verification token: {token}")
+        
+        send_new_account_email(user.email, token)
 
 
+async def get_user_manager(user_db: SQLAlchemyUserDatabase = Depends(get_user_db)):
+    yield UserManager(user_db)
+
+fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend])
+
+current_active_user = fastapi_users.current_user(active=True)
+current_active_superuser = fastapi_users.current_user(active=True, superuser=True)

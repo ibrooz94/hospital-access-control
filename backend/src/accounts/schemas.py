@@ -1,39 +1,29 @@
 from enum import Enum
-from pydantic import BaseModel
+import uuid
+from pydantic import BaseModel, EmailStr
+from fastapi_users import schemas
 
 class Role(str, Enum):
     admin = 'admin'
     user = 'user'
     doctor = 'doctor'
+    
+class UserRead(schemas.BaseUser[uuid.UUID]):
+    pass
 
-class UserBase(BaseModel):
-    first_name: str | None = None
-    last_name: str | None = None
-    email: str | None = None
-    is_active: bool | None = True
-    is_superuser: bool = False
+class UserCreate(schemas.BaseUserCreate):
+    pass
 
-class UserCreate(UserBase):
-    email: str
+class UserUpdate(schemas.BaseUserUpdate):
+    pass
+
+class UserCreatePublic(schemas.CreateUpdateDictModel):
+    email: EmailStr
     password: str
-
-class UserCreate(UserBase):
-    password: str
-
-class UserInDB(UserBase):
-    hashed_password: str
-
-class UserOut(UserBase):
+    
+class UserOut(schemas.BaseUser):
     id: int
 
 class UsersOut(BaseModel):
     data: list[UserOut]
     count: int
-
-class UserUpdate(UserCreate):
-    email: str | None = None
-    password: str | None = None
-
-class UserUpdateMe(BaseModel):
-    first_name: str | None = None
-    last_name: str | None = None
