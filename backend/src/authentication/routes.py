@@ -1,7 +1,7 @@
 
 from fastapi import APIRouter
-from src.accounts.schemas import UserCreate, UserRead, UserCreatePublic
-from src.accounts.services import fastapi_users
+from src.account.schemas import UserCreate, UserRead, UserCreatePublic
+from src.account.services import fastapi_users
 from .services import auth_backend
 
 router = APIRouter()

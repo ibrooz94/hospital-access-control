@@ -1,4 +1,6 @@
 from src.core.database import Base
 
-# Update new models here
-from src.accounts import models as user_models
+#NOTE import models here !IMPORTANT
+
+from src.account import models as user_models
+# from src.visit import models as visit_models

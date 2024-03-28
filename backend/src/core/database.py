@@ -1,12 +1,21 @@
 import contextlib
 from typing import AsyncIterator, Any
-
+from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import (AsyncConnection, AsyncEngine, AsyncSession,
                                     async_sessionmaker, create_async_engine)
 from sqlalchemy.orm import declarative_base
 from src.core.config import settings
 
-Base = declarative_base()
+# fixes alembic foreign key drop constraint issue on downgrades
+convention = {
+    "ix": "ix_%(column_0_label)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s",
+}
+
+Base = declarative_base(metadata=MetaData(naming_convention=convention))
 
 class DatabaseSessionManager:
 
