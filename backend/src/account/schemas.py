@@ -12,6 +12,7 @@ class Role(int, Enum):
     ADMIN = PATIENT or LAB_TECH or NURSE or DOCTOR
     
 class UserRead(schemas.BaseUser[uuid.UUID]):
+    role_id: int
     created_at: datetime
     updated_at: datetime
 

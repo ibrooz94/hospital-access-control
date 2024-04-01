@@ -1,3 +1,5 @@
+# deprecated replaced by fastapi-users library
+
 import bcrypt
 import datetime as dt
 from typing import Any

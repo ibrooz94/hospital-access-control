@@ -5,6 +5,7 @@ from src.core.config import settings
 
 from src.account import routes as user_routes
 from src.authentication import routes as auth_routes
+from src.visit import routes as visit_routes
 
 def custom_generate_unique_id(route: APIRoute):
     return f"{route.tags[0]}-{route.name}"
@@ -14,7 +15,7 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     generate_unique_id_function=custom_generate_unique_id,
-    debug = True # TODO: Remove
+    debug = settings.DEBUG
 )
 
 if settings.BACKEND_CORS_ORIGINS:
@@ -32,6 +33,7 @@ if settings.BACKEND_CORS_ORIGINS:
 api_router = APIRouter()
 api_router.include_router(auth_routes.router, prefix="/auth", tags=["auth"])
 api_router.include_router(user_routes.router, prefix="/users", tags=["users"])
+# api_router.include_router(visit_routes.router, prefix="/visits", tags=["visit"])
 
 
 app.include_router(api_router, prefix=settings.API_V1_STR)

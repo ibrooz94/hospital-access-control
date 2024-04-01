@@ -10,6 +10,7 @@ from pydantic import (
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
+    DEBUG: bool
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
@@ -23,7 +24,8 @@ class Settings(BaseSettings):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, list | str):
             return v
-        raise ValueError(v)
+        else:
+            raise ValueError(v)
     
     PROJECT_NAME: str
     POSTGRES_SERVER: str

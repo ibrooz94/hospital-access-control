@@ -1,19 +1,22 @@
 import logging
 import emails
+import datetime
+
 from pathlib import Path
 from typing import Any
 from emails.template import JinjaTemplate
+from sqlalchemy import func
+from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy.types import DateTime
+
 from src.core.config import settings
 
-import datetime
-from typing import Annotated
-from sqlalchemy.orm import mapped_column
-from sqlalchemy import text
 
-created_at = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]
-updated_at = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"),
-                                                        onupdate=datetime.datetime.now()
-                                                        )]
+class TimestampMixin(object):
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), 
+        server_default=func.now(),
+        onupdate=func.current_timestamp())
 
 
 def send_email(

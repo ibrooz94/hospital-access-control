@@ -1,20 +1,39 @@
-from fastapi import APIRouter, Depends
-from .services import fastapi_users, RoleChecker, current_active_user
-from .schemas import UserRead, UserUpdate, Role, UserUpdatePublic
-from src.core.dependecies import SessionDep
-from .models import User
-from sqlalchemy.orm import selectinload, joinedload
+from uuid import UUID
+from typing import Annotated
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+from fastapi import APIRouter, Depends, Body
 
+from src.core.dependecies import SessionDep
+from .services import fastapi_users, RoleChecker, current_active_user, current_active_superuser
+from .schemas import UserRead, UserUpdate, Role, UserUpdatePublic
+from .models import User
 
+allow_create_resource = RoleChecker([Role.PATIENT])
 
 router = APIRouter()
 
 router.include_router(
-    fastapi_users.get_users_router(UserRead, UserUpdatePublic)
+    fastapi_users.get_users_router(UserRead, UserUpdate)
 )
 
-allow_create_resource = RoleChecker([Role.PATIENT])
+
+@router.patch(
+    "/{id}/role",
+    status_code=201,
+    dependencies=[Depends(current_active_superuser)],
+    response_model = UserRead
+)
+async def update_user_role(session: SessionDep, id:UUID, role_id: Role):
+    statement = select(User).where(User.id == id).options(selectinload(User.role))
+    result = (await session.execute(statement)).scalar()
+
+    result.role_id = role_id
+
+    await session.commit()
+    await session.refresh(result)
+
+    return result
 
 @router.post(
     "/some-resource/",
@@ -22,7 +41,7 @@ allow_create_resource = RoleChecker([Role.PATIENT])
     dependencies=[Depends(allow_create_resource)],
 )
 async def add_resource(session: SessionDep):
-    statement = select(User).where(User.email == "user@example.com").options(joinedload(User.role))
+    statement = select(User).where(User.email == "user@example.com").options(selectinload(User.role))
     result = (await session.execute(statement)).scalar()
 
     return {"hello": result.role }
