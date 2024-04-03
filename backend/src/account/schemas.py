@@ -9,7 +9,6 @@ class Role(int, Enum):
     LAB_TECH = 2
     NURSE = 3
     DOCTOR = 4
-    ADMIN = PATIENT or LAB_TECH or NURSE or DOCTOR
     
 class UserRead(schemas.BaseUser[uuid.UUID]):
     role_id: int

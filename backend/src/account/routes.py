@@ -9,7 +9,7 @@ from .services import fastapi_users, RoleChecker, current_active_user, current_a
 from .schemas import UserRead, UserUpdate, Role, UserUpdatePublic
 from .models import User
 
-allow_create_resource = RoleChecker([Role.PATIENT])
+allow_create_resource = RoleChecker([Role.NURSE, Role.DOCTOR])
 
 router = APIRouter()
 
@@ -40,8 +40,8 @@ async def update_user_role(session: SessionDep, id:UUID, role_id: Role):
     status_code=201,
     dependencies=[Depends(allow_create_resource)],
 )
-async def add_resource(session: SessionDep):
-    statement = select(User).where(User.email == "user@example.com").options(selectinload(User.role))
+async def add_resource(session: SessionDep, user: User = Depends(current_active_user)):
+    statement = select(User).where(User.id == user.id).options(selectinload(User.role))
     result = (await session.execute(statement)).scalar()
 
     return {"hello": result.role }
