@@ -1,49 +1,73 @@
 import secrets
-from typing import Any
+from typing import Annotated, Any, Literal
+from typing_extensions import Self
+
+from pydantic import EmailStr
+
+from pydantic_core import MultiHostUrl
 from pydantic import (
-    AnyHttpUrl,
+    AnyUrl,
+    BeforeValidator,
     PostgresDsn,
-    EmailStr,
-    field_validator,
-    ValidationInfo,
+    computed_field,
+    model_validator,
 )
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+def parse_cors(v: Any) -> list[str] | str:
+    if isinstance(v, str) and not v.startswith("["):
+        return [i.strip() for i in v.split(",")]
+    elif isinstance(v, list | str):
+        return v
+    raise ValueError(v)
 
 class Settings(BaseSettings):
-    DEBUG: bool
+    model_config = SettingsConfigDict(
+        env_file=".env", env_ignore_empty=True, extra="ignore"
+    )
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
-    SERVER_HOST: AnyHttpUrl
-    BACKEND_CORS_ORIGINS: list[AnyHttpUrl] | str = []
+    DOMAIN: str = "localhost"
+    ENVIRONMENT: Literal["local", "staging", "production"] = "local"
 
-    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
-    @classmethod
-    def assemble_cors_origins(cls, v:str | list[str]) -> list[str] | str:
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, list | str):
-            return v
-        else:
-            raise ValueError(v)
+    @computed_field  # type: ignore[misc]
+    @property
+    def server_host(self) -> str:
+        # Use HTTPS for anything other than local development
+        if self.ENVIRONMENT == "local":
+            return f"http://{self.DOMAIN}"
+        return f"https://{self.DOMAIN}"
+    
+    @computed_field  # type: ignore[misc]
+    @property
+    def debug(self) -> bool:
+        # Use HTTPS for anything other than local development
+        if self.ENVIRONMENT == "local":
+            return True
+        False
+    
+    BACKEND_CORS_ORIGINS: Annotated[
+        list[AnyUrl] | str, BeforeValidator(parse_cors)
+    ] = []
     
     PROJECT_NAME: str
     POSTGRES_SERVER: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
-    SQLALCHEMY_DATABASE_URI: PostgresDsn | None = None
+    POSTGRES_PORT: int = 5432
 
-    @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
-    def assemble_db_connection(cls, v: str | None, info: ValidationInfo) -> Any:
-        if isinstance(v, str):
-            return v
-        return PostgresDsn.build(
+    @computed_field  # type: ignore[misc]
+    @property
+    def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
+        return MultiHostUrl.build(
             scheme="postgresql+asyncpg",
-            username=info.data.get("POSTGRES_USER"),
-            password=info.data.get("POSTGRES_PASSWORD"),
-            host=info.data.get("POSTGRES_SERVER"),
-            path=f"{info.data.get('POSTGRES_DB') or ''}",
+            username=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD,
+            host=self.POSTGRES_SERVER,
+            port=self.POSTGRES_PORT,
+            path=self.POSTGRES_DB,
         )
     
     SMTP_TLS: bool = False
@@ -53,25 +77,19 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str | None = None
     EMAILS_FROM_EMAIL: EmailStr | None = None
     EMAILS_FROM_NAME: str | None = None
-    EMAIL_TEST_USER: EmailStr = "test@example.com"
 
-
-    @field_validator("EMAILS_FROM_NAME")
-    def get_project_name(cls, v: str | None, info: ValidationInfo) -> str:
-        if not v:
-            return info.data["PROJECT_NAME"]
-        return v
+    @model_validator(mode="after")
+    def _set_default_emails_from(self) -> Self:
+        if not self.EMAILS_FROM_NAME:
+            self.EMAILS_FROM_NAME = self.PROJECT_NAME
+        return self
 
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
     EMAIL_TEMPLATES_DIR: str = "static/email_templates"
-    EMAILS_ENABLED: bool = False
 
-    @field_validator("EMAILS_ENABLED", mode="before")
-    def get_emails_enabled(cls, v: bool, info: ValidationInfo) -> bool:
-        return bool(
-            info.data.get("SMTP_HOST")
-            and info.data.get("SMTP_PORT")
-            and info.data.get("EMAILS_FROM_EMAIL")
-        )
+    @computed_field  # type: ignore[misc]
+    @property
+    def emails_enabled(self) -> bool:
+        return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
 
 settings = Settings()
