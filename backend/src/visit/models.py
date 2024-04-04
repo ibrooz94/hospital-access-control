@@ -7,11 +7,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import DateTime
 
 from src.core.database import Base
-from src.utils import TimestampMixin
-from .schemas import VisitStatus
+from src.utils.types import TimestampMixin
 from src.vital.models import Vital
 from src.note.models import Note
 from src.labtest.models import LabTest
+from .schemas import VisitStatus
 
 user_id = Annotated[UUID, mapped_column(ForeignKey("user.id"))]
 visit_id = Annotated[int, mapped_column(ForeignKey("visit.id", ondelete="cascade"))]

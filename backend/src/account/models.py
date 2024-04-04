@@ -1,9 +1,9 @@
-from uuid import UUID
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.core.models import Base
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID
-from src.utils import TimestampMixin
+
+from src.core.models import Base
+from src.utils.types import TimestampMixin
 
 class User(TimestampMixin, SQLAlchemyBaseUserTableUUID, Base):
     

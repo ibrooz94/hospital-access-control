@@ -8,8 +8,8 @@ from fastapi_users.db import SQLAlchemyUserDatabase
 from src.core.config import settings
 from src.core.dependecies import get_user_db
 from src.authentication.services import auth_backend
+from src.utils.email import send_new_account_email
 from .models import User
-from src.utils import send_new_account_email
 
 #TODO Remove print statements
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):

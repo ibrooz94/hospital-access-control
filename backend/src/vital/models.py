@@ -1,8 +1,8 @@
-from src.utils import TimestampMixin, user_id, visit_id
+from typing import TYPE_CHECKING
+from src.utils.types import TimestampMixin, user_id, visit_id
 from src.core.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.visit.models import Visit
 

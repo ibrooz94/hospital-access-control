@@ -1,12 +1,11 @@
 from typing import Any, Dict, Optional, TypeVar
 
 from fastapi import HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from .database import Base
+from sqlalchemy.ext.asyncio import AsyncSession
+from src.utils.types import ModelT
 
 
-ModelT = TypeVar("ModelT", bound=Base)
 
 class CRUDBase:
     """
@@ -16,10 +15,10 @@ class CRUDBase:
         Model (SQLAlchemy.orm.decl_api.DeclarativeBase): The SQLAlchemy model class.
     """
 
-    def __init__(self, model: Any):
+    def __init__(self, model: ModelT):
         self.model = model
 
-    async def create(self, session: AsyncSession, data: Dict[str, Any], *args, **kwargs) -> Any:
+    async def create(self, session: AsyncSession, data: Dict[str, Any], *args, **kwargs) -> ModelT:
         """
         Creates a new instance of the model.
 
@@ -46,7 +45,7 @@ class CRUDBase:
                 detail=f"Error creating {self.model.__name__}: {str(e)}",
             )
 
-    async def get_all(self, session: AsyncSession, skip: int = 0, limit: int = 100) -> list[Any]:
+    async def get_all(self, session: AsyncSession, skip: int = 0, limit: int = 100) -> list[ModelT]:
         """
         Retrieves all instances of the model.
 
@@ -61,7 +60,7 @@ class CRUDBase:
         result = await session.execute(query)
         return result.scalars().all()
 
-    async def get_by_id(self, session: AsyncSession, id: int) -> Optional[Any]:
+    async def get_by_id(self, session: AsyncSession, id: int) -> Optional[ModelT]:
         """
         Retrieves a single instance of the model by its ID.
 
@@ -81,7 +80,7 @@ class CRUDBase:
             )
         return result 
     
-    async def update(self, session: AsyncSession, id: int, data: Dict[str, Any]) -> Optional[Any]:
+    async def update(self, session: AsyncSession, id: int, data: Dict[str, Any]) -> Optional[ModelT]:
         """
         Updates an existing instance of the model.
 
@@ -114,7 +113,7 @@ class CRUDBase:
                 detail=f"Error updating {self.model.__name__}: {str(e)}",
             )
 
-    async def delete(self, session: AsyncSession, id: int) -> int:
+    async def delete(self, session: AsyncSession, id: int) -> bool:
         """
         Deletes an existing instance of the model by its ID.
 

@@ -1,11 +1,11 @@
-from typing import Optional
-from src.utils import TimestampMixin, visit_id
-from src.core.database import Base
+from typing import Optional, TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from .schemas import LabStatus
 from sqlalchemy.types import Text
 
-from typing import TYPE_CHECKING
+from src.core.database import Base
+from src.utils.types import TimestampMixin, visit_id
+from .schemas import LabStatus
+
 if TYPE_CHECKING:
     from src.visit.models import Visit
 

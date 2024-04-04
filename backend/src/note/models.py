@@ -1,9 +1,10 @@
-from src.utils import visit_id
-from src.core.database import Base
+from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import Text
 
-from typing import TYPE_CHECKING
+from src.core.database import Base
+from src.utils.types import visit_id
+
 if TYPE_CHECKING:
     from src.visit.models import Visit
 
