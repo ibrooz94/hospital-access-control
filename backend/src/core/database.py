@@ -19,10 +19,13 @@ Base = declarative_base(metadata=MetaData(naming_convention=convention))
 
 class DatabaseSessionManager:
 
-    def __init__(self, host: str, engine_kwargs: dict[str, Any] = {}):
-        self._engine: AsyncEngine = create_async_engine(host)
-        self._sessionmaker: async_sessionmaker = async_sessionmaker(autocommit=False, bind=self._engine)
+    def __init__(self):
+        self._engine: AsyncEngine | None = None
+        self._sessionmaker: async_sessionmaker | None = None
 
+    def init(self, host: str):
+        self._engine = create_async_engine(host)
+        self._sessionmaker = async_sessionmaker(autocommit=False, bind=self._engine)
     async def close(self):
         if self._engine is None:
             raise Exception("DatabaseSessionManager is not initialized")
@@ -55,6 +58,6 @@ class DatabaseSessionManager:
             raise
         finally:
             await session.close()
-
-sessionmanager = DatabaseSessionManager(host=str(settings.SQLALCHEMY_DATABASE_URI))
+        
+sessionmanager = DatabaseSessionManager()
 

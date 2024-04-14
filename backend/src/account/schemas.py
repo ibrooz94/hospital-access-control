@@ -11,7 +11,7 @@ class Role(int, Enum):
     DOCTOR = 4
     
 class UserRead(schemas.BaseUser[uuid.UUID]):
-    role_id: int
+    role_id: Role
     created_at: datetime
     updated_at: datetime
 
@@ -23,6 +23,9 @@ class UserUpdate(schemas.BaseUserUpdate):
 
 class UserUpdatePublic(schemas.CreateUpdateDictModel):
     password:str
+
+class UserCreateRole(UserCreate):
+    role_id: Role
 
 class UserCreatePublic(schemas.CreateUpdateDictModel):
     email: EmailStr

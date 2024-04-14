@@ -15,7 +15,7 @@ class CRUDBase:
         Model (SQLAlchemy.orm.decl_api.DeclarativeBase): The SQLAlchemy model class.
     """
 
-    def __init__(self, model: ModelT):
+    def __init__(self, model: type[ModelT]):
         self.model = model
 
     async def create(self, session: AsyncSession, data: Dict[str, Any], *args, **kwargs) -> ModelT:

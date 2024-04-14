@@ -5,6 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession as Session
 
 from src.account.models import User
 from .database import sessionmanager
+from .config import settings
+
+session_manager = sessionmanager.init(host = str(settings.SQLALCHEMY_DATABASE_URI) )
 
 async def get_db():
     async with sessionmanager.session() as session:

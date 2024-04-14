@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     @computed_field  # type: ignore[misc]
     @property
-    def server_host(self) -> str:
+    def SERVER_HOST(self) -> str:
         # Use HTTPS for anything other than local development
         if self.ENVIRONMENT == "local":
             return f"http://{self.DOMAIN}"
@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     
     @computed_field  # type: ignore[misc]
     @property
-    def debug(self) -> bool:
+    def DEBUG(self) -> bool:
         # Use HTTPS for anything other than local development
         if self.ENVIRONMENT == "local":
             return True
@@ -62,7 +62,7 @@ class Settings(BaseSettings):
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
         return MultiHostUrl.build(
-            scheme="postgresql+asyncpg",
+            scheme="postgresql+psycopg",
             username=self.POSTGRES_USER,
             password=self.POSTGRES_PASSWORD,
             host=self.POSTGRES_SERVER,
@@ -89,7 +89,7 @@ class Settings(BaseSettings):
 
     @computed_field  # type: ignore[misc]
     @property
-    def emails_enabled(self) -> bool:
+    def EMAILS_ENABLED(self) -> bool:
         return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
 
 settings = Settings()
