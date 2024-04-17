@@ -12,10 +12,10 @@ if TYPE_CHECKING:
 class LabTest(TimestampMixin, Base):
     __tablename__ = "labtest"
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    visit_id: Mapped[Optional[visit_id]]
+    visit_id: Mapped[visit_id]
     lab_type: Mapped[str]
-    status: Mapped[LabStatus]
-    result: Mapped[str]
-    note: Mapped[str] = mapped_column(Text)
+    status: Mapped[LabStatus] = mapped_column(default=LabStatus.PENDING)
+    result: Mapped[Optional[str]]
+    note: Mapped[str] = mapped_column(Text, nullable=True)
 
     visit:Mapped["Visit"] = relationship(back_populates="labtests")

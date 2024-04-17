@@ -22,3 +22,5 @@ class AppointmentOut(AppointmentCreate):
     requested_by: UUID | None = None
     assigned_doctor: UUID | None = None
     status: AppointmentStatus
+    created_at: datetime
+    updated_at: datetime

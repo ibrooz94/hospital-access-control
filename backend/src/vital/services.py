@@ -1,14 +1,11 @@
-
 from sqlalchemy.ext.asyncio import AsyncSession as Session
 
 from src.visit.services import get_visit_by_id
-
 from src.utils.crud import CRUDBase
 from src.account.models import User
 from src.visit.dependencies import VisitChecker
 from .schemas import VitalCreate
 from .models import Vital
-
 
 
 class VitalCRUD(CRUDBase):

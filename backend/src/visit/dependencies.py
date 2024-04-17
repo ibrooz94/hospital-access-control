@@ -40,7 +40,7 @@ class VisitChecker:
         item = (await session.execute(statement)).scalar()
         
         if not item:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, 
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                                 detail=f"{self.item_model.__name__} with ID {item_id} not found in visit with ID {visit_id}")
 
         return item
