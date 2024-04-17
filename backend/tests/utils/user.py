@@ -29,10 +29,8 @@ async def user_authentication_headers(
 
     r = await async_client.post(f"/api/v1/auth/jwt/login", data=data)
     response = r.json()
-    print(response)
     auth_token = response["access_token"]
     headers = {"authorization": f"Bearer {auth_token}"}
-    print("headers", headers)
     return headers
 
 

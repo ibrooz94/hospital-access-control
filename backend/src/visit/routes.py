@@ -33,7 +33,7 @@ async def get_visit(id:int, session: SessionDep):
     return visit
 
 @router.get(
-    "/patient/{patient_id}",
+    "/{patient_id}/patient",
     status_code=201, 
     dependencies=[Depends(allow_create_resource)],
     response_model = list[VisitBase]
@@ -53,7 +53,7 @@ async def update_visit( session: SessionDep, id:int, request: VisitUpdate):
     return visit
 
 @router.delete(
-    "/{id}/delete",
+    "/{id} ",
     status_code=204,
     dependencies=[Depends(allow_create_resource)]
 )

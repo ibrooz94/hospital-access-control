@@ -9,12 +9,13 @@ from .services import vital_crud, visit_checker
 
 
 router = APIRouter(prefix="/{visit_id}")
-allow_create_resource = RoleChecker([Role.DOCTOR, Role.NURSE, Role.LAB_TECH])
+allow_create_edit_resource = RoleChecker([Role.DOCTOR, Role.NURSE])
+allow_read_resource = RoleChecker([Role.DOCTOR, Role.NURSE, Role.LAB_TECH])
 
 @router.post(
     "/vital",
     status_code=201,
-    dependencies=[Depends(allow_create_resource)],
+    dependencies=[Depends(allow_read_resource)],
     response_model = VitalOut
 )
 async def create_visit_vital(session: SessionDep, visit_id: int, request: VitalCreate, user = Depends(current_active_user)):
@@ -24,7 +25,7 @@ async def create_visit_vital(session: SessionDep, visit_id: int, request: VitalC
 @router.get(
     "/vital/{item_id}",
     status_code=201,
-    dependencies=[Depends(allow_create_resource), Depends(visit_checker)],
+    dependencies=[Depends(allow_create_edit_resource), Depends(visit_checker)],
     response_model = VitalOut
 )
 async def get_vital(session: SessionDep, item_id:int):
@@ -34,7 +35,7 @@ async def get_vital(session: SessionDep, item_id:int):
 @router.patch(
     "/vital/{item_id}",
     status_code=201,
-    dependencies=[Depends(allow_create_resource), Depends(visit_checker)],
+    dependencies=[Depends(allow_create_edit_resource), Depends(visit_checker)],
     response_model = VitalOut
 )
 async def update_vital(session: SessionDep, request: VitalCreate, item_id:int):

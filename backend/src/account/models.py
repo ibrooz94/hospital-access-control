@@ -8,7 +8,7 @@ from src.utils.types import TimestampMixin
 class User(TimestampMixin, SQLAlchemyBaseUserTableUUID, Base):
     
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), default=1)
-    role: Mapped["Role"] = relationship() #,  lazy="selectin")
+    role: Mapped["Role"] = relationship(lazy="selectin")
     
     def __repr__(self):
         return f"<User {self.email}>"

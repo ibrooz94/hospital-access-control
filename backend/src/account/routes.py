@@ -25,7 +25,7 @@ router.include_router(
     response_model = UserRead
 )
 async def update_user_role(session: SessionDep, id:UUID, role_id: Role):
-    statement = select(User).where(User.id == id).options(selectinload(User.role))
+    statement = select(User).where(User.id == id)
     result = (await session.execute(statement)).scalar()
 
     result.role_id = role_id
@@ -41,7 +41,7 @@ async def update_user_role(session: SessionDep, id:UUID, role_id: Role):
     dependencies=[Depends(allow_create_resource)],
 )
 async def add_resource(session: SessionDep, user: User = Depends(current_active_user)):
-    statement = select(User).where(User.id == user.id).options(selectinload(User.role))
+    statement = select(User).where(User.id == user.id)
     result = (await session.execute(statement)).scalar()
 
     return {"hello": result.role }
