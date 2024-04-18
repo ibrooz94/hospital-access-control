@@ -6,6 +6,7 @@ from src.account.services import RoleChecker, current_active_user
 from src.account.schemas import Role
 from src.vital.routes import router as vital_router
 from src.labtest.routes import router as labtest_router
+from src.note.routes import router as note_router
 from .schemas import VisitBase, VisitCreate, VisitOut, VisitUpdate
 from . import services
 
@@ -64,4 +65,5 @@ async def delete_visit( session: SessionDep, id:int):
 
 router.include_router(vital_router, tags=["vital"])
 router.include_router(labtest_router, tags=["labtest"])
+router.include_router(note_router, tags=["note"])
 

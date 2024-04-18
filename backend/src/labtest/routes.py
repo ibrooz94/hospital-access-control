@@ -15,7 +15,7 @@ allow_read_resource = RoleChecker([Role.DOCTOR, Role.NURSE, Role.LAB_TECH])
 @router.post(
     "/labtest",
     status_code=201,
-    dependencies=[Depends(allow_read_resource), Depends(current_active_user)],
+    dependencies=[Depends(allow_create_edit_resource), Depends(current_active_user)],
     response_model = LabTestRead
 )
 async def create_visit_labtest(session: SessionDep, visit_id: int, request: LabTestCreate):
