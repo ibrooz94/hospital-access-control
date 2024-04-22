@@ -27,7 +27,7 @@ def app():
     with ExitStack():
         yield _app
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 async def async_client(app) -> AsyncGenerator:
     async with ASGITransport(app=app) as transport:
         async with AsyncClient(transport=transport, base_url="https://test") as c:
