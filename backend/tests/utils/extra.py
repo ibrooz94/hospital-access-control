@@ -1,9 +1,7 @@
 import random
 import string
-
-from src.core.config import settings
-from httpx import AsyncClient
-
+from fastapi_users.schemas import BaseUser
+import datetime
 def random_lower_string() -> str:
     return "".join(random.choices(string.ascii_lowercase, k=32))
 
@@ -19,3 +17,16 @@ user_data = [
     {"email": "nur@nur.com", "password": "nurnur", "role_id": 3},
     {"email": "doc@doc.com", "password": "docdoc", "role_id": 4},
 ]
+
+class UserDB(BaseUser):
+    role_id: int
+
+nurse_user = UserDB(
+    id = "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    email="nurse@nurse.com",
+    hashed_password="aaa",
+    role_id=3,
+    is_active=True,
+    is_verified=True,
+    is_superuser=False
+)

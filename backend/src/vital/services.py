@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession as Session
+from sqlalchemy import select
 
 from src.visit.services import get_visit_by_id
 from src.utils.crud import CRUDBase
@@ -11,6 +12,20 @@ from .models import Vital
 class VitalCRUD(CRUDBase):
     def __init__(self):
         super().__init__(Vital)
+
+    async def create(self, session:Session, visit_id: int, data:VitalCreate,  user: User) -> Vital:
+        visit = await get_visit_by_id(session, visit_id)
+        data = {
+            "visit_id" : visit.id,
+            "taken_by" : user.id,
+            **data.model_dump()
+        }
+        return await super().create(session, data)
+    
+    async def get_all_by_visit(self, session: Session,visit_id: int, skip: int = 0, limit: int = 100) -> list[Vital]:
+        query = select(self.model).where(self.model.visit_id == visit_id).offset(skip).limit(limit)
+        result = await session.execute(query)
+        return result.scalars().all()
 
     async def create(self, session:Session, visit_id: int, data:VitalCreate,  user: User) -> Vital:
         visit = await get_visit_by_id(session, visit_id)

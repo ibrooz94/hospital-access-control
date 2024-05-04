@@ -23,6 +23,16 @@ async def create_visit_vital(session: SessionDep, visit_id: int, request: VitalC
     return vital
 
 @router.get(
+    "/vitals/",
+    status_code=201,
+    dependencies=[Depends(allow_create_edit_resource)],
+    response_model = list[VitalOut]
+)
+async def get_all_vital(session: SessionDep, visit_id:int, skip: int = 0, limit: int = 100):
+    vitals = await vital_crud.get_all_by_visit(session, visit_id, skip, limit)
+    return vitals
+
+@router.get(
     "/vital/{item_id}",
     status_code=201,
     dependencies=[Depends(allow_create_edit_resource), Depends(visit_checker)],

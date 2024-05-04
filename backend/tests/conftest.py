@@ -13,7 +13,6 @@ from src.account.services import get_user_manager
 from src.account.models import Role
 from src.account.schemas import UserCreate
 from tests.utils.user import _create_user, get_superuser_token_headers, user_authentication_headers
-from tests.utils.extra import user_data
 from contextlib import ExitStack
 from fastapi import FastAPI
 
@@ -85,17 +84,14 @@ async def create_roles(request, user_manager, create_tables):
 
 @pytest.fixture
 async def authenticated_superuser(async_client: AsyncClient):
-    response = await get_superuser_token_headers(async_client)
-    async_client.headers["Authorization"] = response['authorization']
+    await get_superuser_token_headers(async_client)
+    # async_client.headers["Authorization"] = response['authorization']
     yield async_client
 
 @pytest.fixture
 async def authenticated_user(async_client):
     async def _auth(email:str, password:str, *args, **kwargs):
-        response = await user_authentication_headers(async_client, email, password)
-        assert response["authorization"], "Authentication failed"  # Assert successful authentication
-
-        async_client.headers["Authorization"] = response['authorization']
+        await user_authentication_headers(async_client, email, password)
         return async_client
 
     authenticated_client = _auth
