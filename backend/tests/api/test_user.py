@@ -11,9 +11,9 @@ async def test_register_user(async_client: AsyncClient) -> None:
     assert response.status_code == status.HTTP_201_CREATED
 
 
-async def test_get_users_superuser_me(authenticated_superuser: AsyncClient, create_roles) -> None:
+async def test_get_users_superuser_me(authenticated_superuser: AsyncClient) -> None:
 
-    r = await authenticated_superuser.get(f"api/v1/users/me")
+    r = await authenticated_superuser.get(f"api/v1/user/me")
     assert r.status_code == status.HTTP_200_OK
 
     current_user = r.json()
@@ -28,7 +28,7 @@ async def test_nurse_role(authenticated_user: AsyncClient, user_manager) -> None
     await _create_user(user_manager, **user_credentials)
     r: AsyncClient = await authenticated_user(**user_credentials)
 
-    response = await r.get(f"api/v1/users/me")
+    response = await r.get(f"api/v1/user/me")
     assert response.status_code == status.HTTP_200_OK
 
     current_user = response.json()

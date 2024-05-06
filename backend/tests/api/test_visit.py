@@ -17,6 +17,6 @@ async def test_create_visit(authenticated_user: AsyncClient, user_manager: BaseU
     user_credentials = user_data[4]
     await _create_user(user_manager, **user_credentials)
     r = await authenticated_user(**user_credentials)
-    response = await r.post("/api/v1/visits/",json=data)
+    response = await r.post("/api/v1/visit/",json=data)
     
     assert response.status_code == status.HTTP_201_CREATED

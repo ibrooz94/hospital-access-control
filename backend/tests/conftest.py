@@ -83,7 +83,7 @@ async def create_roles(request, user_manager, create_tables):
     )
 
 @pytest.fixture
-async def authenticated_superuser(async_client: AsyncClient):
+async def authenticated_superuser(app: FastAPI, async_client: AsyncClient):
     await get_superuser_token_headers(async_client)
     # async_client.headers["Authorization"] = response['authorization']
     yield async_client
