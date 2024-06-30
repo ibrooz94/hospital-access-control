@@ -1,25 +1,30 @@
-import { mdiMonitor, mdiTable, mdiViewList } from '@mdi/js'
+import { mdiMonitor, mdiViewList } from '@mdi/js'
 
 export default [
   {
-    to: '/',
+    to: '/appointments',
     icon: mdiMonitor,
-    label: 'Dashboard'
+    label: 'Appointments',
+    meta: ['patient', 'doctor']
   },
   {
-    to: '/tables',
-    label: 'Tables',
-    icon: mdiTable
-  },
-  {
-    label: 'Dropdown',
+    label: 'Visit Management',
     icon: mdiViewList,
     menu: [
       {
-        label: 'Item One'
+        label: 'New Visit',
+        to: '/newvisit',
+        meta: ['doctor', 'nurse', 'labtech']
       },
       {
-        label: 'Item Two'
+        label: 'V',
+        to: '/vital',
+        meta: ['nurse', 'doctor']
+      },
+      {
+        label: 'LabTests',
+        to: '/labtest',
+        meta: ['labtech']
       }
     ]
   }

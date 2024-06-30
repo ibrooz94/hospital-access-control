@@ -1,12 +1,14 @@
 //services/index.js
 import authController from './auth'
 import userController from './user'
-import { createWithVisitApiService } from './util'
+import { createWithVisitApiService, createBaseApiService } from './util'
 
-const vitalController = createWithVisitApiService('vital')
+const vitalController = createWithVisitApiService('vitals')
+const appointmentController = createBaseApiService('appointments')
 
 export const API = {
   auth: authController,
   user: userController,
-  vital: vitalController
+  vital: vitalController,
+  appointment: appointmentController
 }

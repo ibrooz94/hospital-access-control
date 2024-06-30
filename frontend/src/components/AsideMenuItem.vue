@@ -44,45 +44,20 @@ const menuClick = (event) => {
 
 <template>
   <li>
-    <component
-      :is="item.to ? RouterLink : 'a'"
-      v-slot="vSlot"
-      :to="item.to ?? null"
-      :href="item.href ?? null"
-      :target="item.target ?? null"
-      class="flex cursor-pointer"
-      :class="componentClass"
-      @click="menuClick"
-    >
-      <BaseIcon
-        v-if="item.icon"
-        :path="item.icon"
-        class="flex-none"
-        :class="[vSlot && vSlot.isExactActive ? asideMenuItemActiveStyle : '']"
-        w="w-16"
-        :size="18"
-      />
-      <span
-        class="grow text-ellipsis line-clamp-1"
-        :class="[
-          { 'pr-12': !hasDropdown },
-          vSlot && vSlot.isExactActive ? asideMenuItemActiveStyle : ''
-        ]"
-        >{{ item.label }}</span
-      >
-      <BaseIcon
-        v-if="hasDropdown"
-        :path="isDropdownActive ? mdiMinus : mdiPlus"
-        class="flex-none"
-        :class="[vSlot && vSlot.isExactActive ? asideMenuItemActiveStyle : '']"
-        w="w-12"
-      />
+    <component :is="item.to ? RouterLink : 'a'" v-slot="vSlot" :to="item.to ?? null" :href="item.href ?? null"
+      :target="item.target ?? null" class="flex cursor-pointer" :class="componentClass" @click="menuClick"
+      v-has-role="item.meta">
+      <BaseIcon v-if="item.icon" :path="item.icon" class="flex-none"
+        :class="[vSlot && vSlot.isExactActive ? asideMenuItemActiveStyle : '']" w="w-16" :size="18" />
+      <span class="grow text-ellipsis line-clamp-1" :class="[
+        { 'pr-12': !hasDropdown },
+        vSlot && vSlot.isExactActive ? asideMenuItemActiveStyle : ''
+      ]">{{ item.label }}</span>
+      <BaseIcon v-if="hasDropdown" :path="isDropdownActive ? mdiMinus : mdiPlus" class="flex-none"
+        :class="[vSlot && vSlot.isExactActive ? asideMenuItemActiveStyle : '']" w="w-12" />
     </component>
-    <AsideMenuList
-      v-if="hasDropdown"
-      :menu="item.menu"
-      :class="['aside-menu-dropdown', isDropdownActive ? 'block dark:bg-slate-800/50' : 'hidden']"
-      is-dropdown-list
-    />
+    <AsideMenuList v-if="hasDropdown" :menu="item.menu"
+      :class="['aside-menu-dropdown', isDropdownActive ? 'block bg-slate-100 dark:bg-slate-800/50' : 'hidden']"
+      is-dropdown-list />
   </li>
 </template>

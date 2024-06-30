@@ -20,6 +20,8 @@ export const useAuthStore = defineStore(
     //   error.value = value
     // }
     const isAuthenticated = computed(() => authUser.value)
+    const isAdmin = computed(() => authUser.value?.is_superuser)
+    const userRole = computed(() => authUser.value?.role.name)
 
     function setUser(payload = null) {
       authUser.value = payload
@@ -98,7 +100,9 @@ export const useAuthStore = defineStore(
 
     return {
       authUser,
+      userRole,
       isAuthenticated,
+      isAdmin,
       setUser,
       dispatchCurrentUser,
       dispatchLogin,

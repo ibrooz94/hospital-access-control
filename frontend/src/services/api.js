@@ -1,5 +1,9 @@
 import axios from 'axios'
 import router from '@/router'
+import { useToast } from 'vue-toastification'
+import { useAuthStore } from '@/stores/auth'
+
+const toast = useToast()
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_ENDPOINT,
@@ -26,17 +30,15 @@ instance.interceptors.response.use(
     return response
   },
   (error) => {
-    // const authStore = useAuthStore()
+    const authStore = useAuthStore()
     if (!error.response) {
-      return console.log('Network Error')
+      router.push('/login')
+      toast.error('Network Error')
     }
     const status = error?.response?.status || null
-    const url = error?.request?.responseURL || null
+    toast.error(error.response.data ? error.response?.data?.detail : undefined)
     if (status === 401) {
-      if (!url?.includes('/logout')) {
-        instance.post('auth/jwt/logout')
-      }
-      localStorage.removeItem('auth')
+      authStore.setUser(null)
       router.push('/login')
     } else return Promise.reject(error)
   }

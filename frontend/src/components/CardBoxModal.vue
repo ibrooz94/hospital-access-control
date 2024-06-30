@@ -20,6 +20,7 @@ const props = defineProps({
     type: String,
     default: 'Done'
   },
+  hasForm: Boolean,
   hasCancel: Boolean,
   modelValue: {
     type: [String, Number, Boolean],
@@ -35,13 +36,16 @@ const value = computed({
 })
 
 const confirmCancel = (mode) => {
-  value.value = false
+  // value.value = false
   emit(mode)
 }
 
 const confirm = () => confirmCancel('confirm')
 
-const cancel = () => confirmCancel('cancel')
+const cancel = () => {
+  confirmCancel('cancel')
+  value.value = false
+}
 
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && value.value) {
@@ -52,20 +56,9 @@ window.addEventListener('keydown', (e) => {
 
 <template>
   <OverlayLayer v-show="value" @overlay-click="cancel">
-    <CardBox
-      v-show="value"
-      class="shadow-lg max-h-modal w-11/12 md:w-3/5 lg:w-2/5 xl:w-4/12 z-50"
-      is-modal
-    >
+    <CardBox v-show="value" class="shadow-lg max-h-modal w-10/12 z-50" is-modal :is-form="hasForm">
       <CardBoxComponentTitle :title="title">
-        <BaseButton
-          v-if="hasCancel"
-          :icon="mdiClose"
-          color="whiteDark"
-          small
-          rounded-full
-          @click.prevent="cancel"
-        />
+        <BaseButton v-if="hasCancel" :icon="mdiClose" color="whiteDark" small rounded-full @click.prevent="cancel" />
       </CardBoxComponentTitle>
 
       <div class="space-y-3">

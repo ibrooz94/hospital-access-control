@@ -2,10 +2,8 @@
 import { computed, ref, onMounted } from 'vue'
 import {
   mdiAccountMultiple,
-  mdiCartOutline,
   mdiChartTimelineVariant,
 } from '@mdi/js'
-import * as chartConfig from '@/components/Charts/chart.config.js'
 import SectionMain from '@/components/SectionMain.vue'
 import CardBoxWidget from '@/components/CardBoxWidget.vue'
 import CardBox from '@/components/CardBox.vue'
@@ -14,21 +12,15 @@ import CardBoxClient from '@/components/CardBoxClient.vue'
 import LayoutAuthenticated from '@/layouts/LayoutAuthenticated.vue'
 import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.vue'
 import CardBoxComponentEmpty from '@/components/CardBoxComponentEmpty.vue'
-import TablePatients from '@/components/TablePatients.vue'
+import TablePatients from '@/components/tables/TablePatients.vue'
 import { API } from '@/services'
 
 // import router from '@/router'
 
-const chartData = ref(null)
 const vitals = ref(null)
-
-const fillChartData = () => {
-  chartData.value = chartConfig.sampleChartData()
-}
 
 
 onMounted(async () => {
-  fillChartData()
   vitals.value = await API.vital.listByVisit(1)
   console.log(vitals.value)
 })
@@ -42,14 +34,16 @@ const transactionBarItems = computed(() => [])
 <template>
   <LayoutAuthenticated>
     <SectionMain>
-      <SectionTitleLineWithButton :icon="mdiChartTimelineVariant" title="Overview" main>
+      <SectionTitleLineWithButton :icon="mdiChartTimelineVariant" title="Appointments" main>
       </SectionTitleLineWithButton>
 
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
-        <CardBoxWidget color="text-emerald-500" :icon="mdiAccountMultiple" :number="512" label="Clients" />
-        <CardBoxWidget color="text-blue-500" :icon="mdiCartOutline" :number="7770" prefix="$" label="Sales" />
-        <CardBoxWidget color="text-red-500" :icon="mdiChartTimelineVariant" :number="256" suffix="%"
-          label="Performance" />
+        <CardBoxWidget color="text-blue-500" :icon="mdiAccountMultiple" :number="1" label="Booked" />
+        <CardBoxWidget color="text-yellow-500" :icon="mdiAccountMultiple" :number="1" label="Pending" />
+        <CardBoxWidget color="text-emerald-500" :icon="mdiAccountMultiple" :number="12" label="Completed" />
+        <CardBoxWidget color="text-red-500" :icon="mdiAccountMultiple" :number="1" label="Cancelled" />
+        <!-- <CardBoxWidget color="text-red-500" :icon="mdiChartTimelineVariant" :number="256" suffix="%"
+          label="Performance" /> -->
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">

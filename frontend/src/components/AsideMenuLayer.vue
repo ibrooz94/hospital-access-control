@@ -30,8 +30,8 @@ const asideLgCloseClick = (event) => {
         <div class="text-center flex-1 mt-10 lg:text-left lg:pl-6 xl:text-center xl:pl-0">
           <b class="font-black">Hospital Access Control</b>
         </div>
-        <button class="hidden lg:inline-block xl:hidden p-3" @click.prevent="asideLgCloseClick">
-          <BaseIcon :path="mdiClose" />
+        <button class="absolute hidden lg:inline-block xl:hidden p-3" @click.prevent="asideLgCloseClick">
+          <BaseIcon :path="mdiClose" size="24" />
         </button>
       </div>
       <div class="flex-1 overflow-y-auto overflow-x-hidden aside-scrollbars dark:aside-scrollbars-[slate] mt-10">

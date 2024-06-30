@@ -9,6 +9,11 @@ const routes = [
     component: HomeView
   },
   {
+    path: '/appointments',
+    name: 'appointments',
+    component: () => import('@/views/AppointmentView.vue')
+  },
+  {
     meta: {
       title: 'Login'
     },

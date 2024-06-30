@@ -5,9 +5,10 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
-import Toast from 'vue-toastification'
+import Toast, { POSITION } from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 
+import hasRole from './directives/hasRole'
 import { useDarkModeStore } from './stores/darkMode'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
@@ -19,7 +20,8 @@ pinia.use(piniaPluginPersistedstate)
 const app = createApp(App)
 app.use(router)
 app.use(pinia)
-app.use(Toast)
+app.use(Toast, { position: POSITION.TOP_RIGHT })
+app.directive('hasRole', hasRole)
 
 app.mount('#app')
 

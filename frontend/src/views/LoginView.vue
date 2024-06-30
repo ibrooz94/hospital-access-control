@@ -32,7 +32,7 @@ const submit = async () => {
   if (request.success) {
     const userRequest = await authStore.dispatchCurrentUser()
     if (userRequest.success) {
-      router.push('/')
+      router.push('/appointments')
     }
   }
 }
@@ -43,11 +43,11 @@ const submit = async () => {
     <SectionFullScreen v-slot="{ cardClass }" bg="pinkRed">
       <CardBox :class="cardClass" is-form @submit.prevent="submit">
         <FormField label="Login" help="Please enter your login">
-          <FormControl v-model="form.login" :icon="mdiAccount" name="login" autocomplete="username" />
+          <FormControl v-model="form.login" :icon="mdiAccount" name="login" autocomplete="username" required />
         </FormField>
 
         <FormField label="Password" help="Please enter your password">
-          <FormControl v-model="form.pass" :icon="mdiAsterisk" type="password" name="password"
+          <FormControl v-model="form.pass" :icon="mdiAsterisk" type="password" name="password" required
             autocomplete="current-password" />
         </FormField>
 
