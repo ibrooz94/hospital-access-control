@@ -1,6 +1,5 @@
 import datetime
-from uuid import UUID
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from sqlalchemy import ForeignKey, event, update, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -14,6 +13,8 @@ from src.note.models import Note
 from src.labtest.models import LabTest
 from src.appointment.models import Appointment
 from .schemas import VisitStatus
+if TYPE_CHECKING:
+    from src.account.models import User
 
 
 class Visit(TimestampMixin, Base):
@@ -29,7 +30,7 @@ class Visit(TimestampMixin, Base):
     notes: Mapped[list["Note"]] = relationship(back_populates="visit", cascade="all, delete", passive_deletes=True)
     labtests: Mapped[list["LabTest"]] = relationship(back_populates="visit", cascade="all, delete", passive_deletes=True)
     appointment: Mapped["Appointment"] = relationship(back_populates="visit", cascade="all, delete", passive_deletes=True)
-
+    patient:Mapped["User"] = relationship(foreign_keys="visit.c.patient_id")
 
 
 def update_visit_on_related_create(mapper, connection, instance):

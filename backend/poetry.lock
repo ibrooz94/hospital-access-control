@@ -621,6 +621,27 @@ typing-extensions = ">=4.8.0"
 all = ["email-validator (>=2.0.0)", "httpx (>=0.23.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=2.11.2)", "orjson (>=3.2.1)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.7)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "uvicorn[standard] (>=0.12.0)"]
 
 [[package]]
+name = "fastapi-filter"
+version = "2.0.0"
+description = "FastAPI filter"
+optional = false
+python-versions = "<4.0,>=3.9"
+files = [
+    {file = "fastapi_filter-2.0.0-py3-none-any.whl", hash = "sha256:14c2ae6819fa71e2db5b29f741fc1f829b14ccf12dce29630e7f87329e7e5cf9"},
+    {file = "fastapi_filter-2.0.0.tar.gz", hash = "sha256:84157d83c52eb16f41f9b8e5bd054d9c9df87b63e23b843f6dbd5c84492ca47e"},
+]
+
+[package.dependencies]
+fastapi = ">=0.100.0,<1.0"
+pydantic = ">=2.0.0,<3.0.0"
+SQLAlchemy = {version = ">=1.4.36,<2.1.0", optional = true, markers = "extra == \"sqlalchemy\" or extra == \"all\""}
+
+[package.extras]
+all = ["SQLAlchemy (>=1.4.36,<2.1.0)", "mongoengine (>=0.24.1,<0.28.0)"]
+mongoengine = ["mongoengine (>=0.24.1,<0.28.0)"]
+sqlalchemy = ["SQLAlchemy (>=1.4.36,<2.1.0)"]
+
+[[package]]
 name = "fastapi-users"
 version = "13.0.0"
 description = "Ready-to-use and customizable users management for FastAPI"
@@ -2003,4 +2024,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "e8844f428a2f4a0f93e31744f4c6f72ee55223315c732349e7f3fffaa6b028c5"
+content-hash = "630a9da86912e7f4395046cba983ed940e33db5bc6d1ef6b4b41f0a61d4baa9c"

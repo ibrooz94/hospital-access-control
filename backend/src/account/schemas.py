@@ -1,6 +1,6 @@
-from enum import Enum
 import uuid
-from pydantic import BaseModel, EmailStr
+from enum import Enum
+from pydantic import BaseModel, EmailStr, ConfigDict
 from fastapi_users import schemas
 from datetime import datetime
 
@@ -10,8 +10,14 @@ class Role(int, Enum):
     NURSE = 3
     DOCTOR = 4
     
+class RoleOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    id: Role
+    name: str
+
 class UserRead(schemas.BaseUser[uuid.UUID]):
-    role_id: Role
+    role: RoleOut
     created_at: datetime
     updated_at: datetime
 

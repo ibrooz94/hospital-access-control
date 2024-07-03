@@ -59,7 +59,6 @@ class RoleChecker:
         self.allowed_roles = allowed_roles
 
     def __call__(self, user: User = Depends(current_active_user)):
-
-        if (user.role_id not in self.allowed_roles) and not user.is_superuser:
+        if (user.role.id not in self.allowed_roles) and not user.is_superuser:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Operation not permitted")
     

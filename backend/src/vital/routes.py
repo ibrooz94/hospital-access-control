@@ -13,7 +13,7 @@ allow_create_edit_resource = RoleChecker([Role.DOCTOR, Role.NURSE])
 allow_read_resource = RoleChecker([Role.DOCTOR, Role.NURSE, Role.LAB_TECH])
 
 @router.post(
-    "/vital",
+    "/vitals",
     status_code=201,
     dependencies=[Depends(allow_read_resource)],
     response_model = VitalOut
@@ -33,7 +33,7 @@ async def get_all_vital(session: SessionDep, visit_id:int, skip: int = 0, limit:
     return vitals
 
 @router.get(
-    "/vital/{item_id}",
+    "/vitals/{item_id}",
     status_code=201,
     dependencies=[Depends(allow_create_edit_resource), Depends(visit_checker)],
     response_model = VitalOut
@@ -43,7 +43,7 @@ async def get_vital(session: SessionDep, item_id:int):
     return vitals
 
 @router.patch(
-    "/vital/{item_id}",
+    "/vitals/{item_id}",
     status_code=201,
     dependencies=[Depends(allow_create_edit_resource), Depends(visit_checker)],
     response_model = VitalOut
@@ -53,7 +53,7 @@ async def update_vital(session: SessionDep, request: VitalCreate, item_id:int):
     return vital
 
 @router.delete(
-    "/vital/{item_id}",
+    "/vitals/{item_id}",
     status_code=204,
     dependencies=[Depends(current_active_superuser), Depends(visit_checker)],
 )

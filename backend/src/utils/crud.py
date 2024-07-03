@@ -1,11 +1,10 @@
-from typing import Any, Dict, Optional, TypeVar
-
+from typing import Any, Dict, Optional
 from fastapi import HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import select, asc, desc
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.expression import Select
+
 from src.utils.types import ModelT
-
-
 
 class CRUDBase:
     """
@@ -17,6 +16,30 @@ class CRUDBase:
 
     def __init__(self, model: type[ModelT]):
         self.model = model
+
+    def apply_filtering_sorting_pagination(self, query: Select, skip: int = 0, limit: int = 100, sort: str | None = None,
+                      filter_by: Dict[str, Any] | None = None) -> Select:
+        
+        # Apply filtering based on filter_by dictionary
+        if filter_by:
+            for key, value in filter_by.items():
+                query = query.where(getattr(self.model, key) == value)
+
+        # Apply sorting based on sort parameter with optional descending order
+        if sort:
+            try:
+                if sort.startswith("-"):
+                    sort_field = getattr(self.model, sort[1:])
+                    query = query.order_by(desc(sort_field))
+                else:
+                    sort_field = getattr(self.model, sort)
+                    query = query.order_by(asc(sort_field))
+            except AttributeError:
+                pass
+
+        # Apply pagination with skip and limit
+        query = query.offset(skip).limit(limit)
+        return query
 
     async def create(self, session: AsyncSession, data: Dict[str, Any], *args, **kwargs) -> ModelT:
         """
@@ -45,7 +68,8 @@ class CRUDBase:
                 detail=f"Error creating {self.model.__name__}: {str(e)}",
             )
 
-    async def get_all(self, session: AsyncSession, skip: int = 0, limit: int = 100) -> list[ModelT]:
+    async def get_all(self, session: AsyncSession, skip: int = 0, limit: int = 100, sort: str | None = None,
+                      filter_by: Dict[str, Any] | None = None) -> list[ModelT]:
         """
         Retrieves all instances of the model.
 
@@ -56,7 +80,8 @@ class CRUDBase:
             list[Any]: A list of all model instances.
         """
 
-        query = select(self.model).offset(skip).limit(limit)
+        query = select(self.model)
+        query = self.apply_filtering_sorting_pagination(query, skip, limit, sort, filter_by)
         result = await session.execute(query)
         return result.scalars().all()
 

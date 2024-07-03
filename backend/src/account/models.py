@@ -4,12 +4,12 @@ from fastapi_users.db import SQLAlchemyBaseUserTableUUID
 
 from src.core.models import Base
 from src.utils.types import TimestampMixin
+from src.appointment.models import Appointment
 
 class User(TimestampMixin, SQLAlchemyBaseUserTableUUID, Base):
     
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), default=1)
     role: Mapped["Role"] = relationship(lazy="selectin")
-    
     def __repr__(self):
         return f"<User {self.email}>"
 class Role(Base):

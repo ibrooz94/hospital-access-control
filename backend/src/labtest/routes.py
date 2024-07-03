@@ -13,17 +13,17 @@ allow_create_edit_resource = RoleChecker([Role.LAB_TECH])
 allow_read_resource = RoleChecker([Role.DOCTOR, Role.NURSE, Role.LAB_TECH])
 
 @router.post(
-    "/labtest",
+    "/labtests",
     status_code=201,
-    dependencies=[Depends(allow_create_edit_resource), Depends(current_active_user)],
+    dependencies=[Depends(allow_read_resource)],
     response_model = LabTestRead
 )
-async def create_visit_labtest(session: SessionDep, visit_id: int, request: LabTestCreate):
-    labtest = await labtest_crud.create(session, visit_id, request)
+async def create_visit_labtest(session: SessionDep, visit_id: int, request: LabTestUpdate, user=Depends(current_active_user)):
+    labtest = await labtest_crud.create(session, visit_id, request, user)
     return labtest
 
 @router.get(
-    "/labtest/{item_id}",
+    "/labtests/{item_id}",
     status_code=201,
     dependencies=[Depends(allow_create_edit_resource), Depends(visit_checker)],
     response_model = LabTestRead
@@ -33,7 +33,7 @@ async def get_labtest(session: SessionDep, item_id:int):
     return labtests
 
 @router.patch(
-    "/labtest/{item_id}",
+    "/labtests/{item_id}",
     status_code=201,
     dependencies=[Depends(allow_create_edit_resource), Depends(visit_checker)],
     response_model = LabTestRead
@@ -43,7 +43,7 @@ async def update_labtest(session: SessionDep, request: LabTestUpdate, item_id:in
     return labtest
 
 @router.delete(
-    "/labtest/{item_id}",
+    "/labtests/{item_id}",
     status_code=204,
     dependencies=[Depends(current_active_superuser), Depends(visit_checker)],
 )

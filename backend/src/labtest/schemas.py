@@ -11,9 +11,9 @@ class LabTestCreate(BaseModel):
     lab_type: str
 
 class LabTestUpdate(LabTestCreate):
-    result: str | None
-    note: str | None
-    status: LabStatus
+    result: str | None = None
+    note: str | None = None
+    status: LabStatus = LabStatus.REQUESTED
 
 class LabTestRead(LabTestUpdate):
     id: int
