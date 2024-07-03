@@ -32,7 +32,12 @@ const submit = async () => {
   if (request.success) {
     const userRequest = await authStore.dispatchCurrentUser()
     if (userRequest.success) {
-      router.push('/appointments')
+      if (userRequest.content.role.id != 4 || userRequest.content.role.id != 1) {
+        router.push('/visits')
+      }
+      else {
+        router.push('/appointments')
+      }
     }
   }
 }

@@ -8,24 +8,9 @@ export default [
     meta: ['patient', 'doctor']
   },
   {
-    label: 'Visit Management',
+    to: '/visits',
     icon: mdiViewList,
-    menu: [
-      {
-        label: 'New Visit',
-        to: '/newvisit',
-        meta: ['doctor', 'nurse', 'labtech']
-      },
-      {
-        label: 'V',
-        to: '/vital',
-        meta: ['nurse', 'doctor']
-      },
-      {
-        label: 'LabTests',
-        to: '/labtest',
-        meta: ['labtech']
-      }
-    ]
+    label: 'Visits',
+    meta: ['doctor', 'nurse', 'labtech']
   }
 ]

@@ -9,9 +9,24 @@ const routes = [
     component: HomeView
   },
   {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/views/ProfileView.vue')
+  },
+  {
     path: '/appointments',
     name: 'appointments',
     component: () => import('@/views/AppointmentView.vue')
+  },
+  {
+    path: '/visits',
+    name: 'visits',
+    component: () => import('@/views/VisitView.vue')
+  },
+  {
+    path: '/visits/:visitId',
+    name: 'visit',
+    component: () => import('@/views/IndividualVisit.vue')
   },
   {
     meta: {

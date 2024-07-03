@@ -1,7 +1,9 @@
 <script setup>
-import { mdiClose } from '@mdi/js'
+import { mdiClose, mdiLogout } from '@mdi/js'
 import AsideMenuList from '@/components/AsideMenuList.vue'
+import AsideMenuItem from './AsideMenuItem.vue';
 import BaseIcon from '@/components/BaseIcon.vue'
+import { computed } from 'vue';
 
 defineProps({
   menu: {
@@ -11,6 +13,14 @@ defineProps({
 })
 
 const emit = defineEmits(['menu-click', 'aside-lg-close-click'])
+
+const logoutItem = computed(() => ({
+  label: 'Logout',
+  icon: mdiLogout,
+  color: 'info',
+  isLogout: true
+}))
+
 
 const menuClick = (event, item) => {
   emit('menu-click', event, item)
@@ -37,7 +47,9 @@ const asideLgCloseClick = (event) => {
       <div class="flex-1 overflow-y-auto overflow-x-hidden aside-scrollbars dark:aside-scrollbars-[slate] mt-10">
         <AsideMenuList :menu="menu" @menu-click="menuClick" />
       </div>
-
+      <ul>
+        <AsideMenuItem :item="logoutItem" @menu-click="menuClick" />
+      </ul>
     </div>
   </aside>
 </template>

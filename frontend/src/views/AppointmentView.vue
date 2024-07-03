@@ -31,12 +31,13 @@ const queryParams = reactive({
     status: null,
     date_from: null,
     date_to: null,
-    sort: null
+    sort: "-updated_at"
   }
 });
 const createAppointmentForm = reactive({
   reason: "",
   scheduled_date: null,
+  on_behalf_of: null
 })
 
 const statusOptions = [
@@ -58,6 +59,7 @@ const submitAppointmentForm = async () => {
   try {
     await API.appointment.create(createAppointmentForm)
     createAppointmentModal.value = false
+    fetchAppointments()
     toast.success("Appointment created")
 
   } catch (err) {
@@ -102,10 +104,15 @@ const createAppointmentModal = ref(false)
             <FormControl v-model="createAppointmentForm.scheduled_date" type="datetime-local" required />
           </FormField>
 
-          <FormField label="Reason" help="Reason for appointment.">
-            <FormControl v-model="createAppointmentForm.reason" type="textarea"
-              placeholder="Explain how we can help you" required />
+          <FormField label="Patient Email" v-has-role="['doctor']">
+            <FormControl v-model="createAppointmentForm.on_behalf_of" type="email" placeholder="Patient email"
+              required />
           </FormField>
+
+          <FormField label="Reason" help="Reason for appointment.">
+            <FormControl v-model="createAppointmentForm.reason" type="textarea" required />
+          </FormField>
+
 
           <template #footer>
             <BaseButtons>

@@ -36,7 +36,13 @@ instance.interceptors.response.use(
       toast.error('Network Error')
     }
     const status = error?.response?.status || null
-    toast.error(error.response.data ? error.response?.data?.detail : undefined)
+    if (error.response.data && error.response.data.detail) {
+      error.response.data.detail.forEach((element) => {
+        toast.error(`${element.msg} ${element.loc[1]}`)
+      })
+      console.log(error.response.data)
+      toast.error(`Missing ${error.response.data.detail.loc[1]}`)
+    }
     if (status === 401) {
       authStore.setUser(null)
       router.push('/login')
