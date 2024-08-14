@@ -1,6 +1,6 @@
 import uuid
 from typing import Optional
-from fastapi import Depends, Request, HTTPException, status
+from fastapi import Depends, Request, HTTPException, Response, status
 from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin
 from fastapi_users.jwt import generate_jwt
 from fastapi_users.db import SQLAlchemyUserDatabase
@@ -10,8 +10,8 @@ from src.core.dependecies import get_user_db
 from src.authentication.services import auth_backend
 from src.utils.email import send_new_account_email
 from .models import User
+from .schemas import Role
 
-#TODO Remove print statements
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     reset_password_token_secret = settings.SECRET_KEY
     verification_token_secret = settings.SECRET_KEY
@@ -31,6 +31,8 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             self.verification_token_lifetime_seconds,
         )
 
+        data = request._json
+        await self._update(user, {"patient.first_name": data.get("first_name")})         
         send_new_account_email(user.email, token)
 
     async def on_after_forgot_password(
@@ -44,7 +46,17 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         print(f"Verification requested for user {user.id}. Verification token: {token}")
         
         send_new_account_email(user.email, token)
- 
+        
+    async def on_after_login(self, user: User, request: Request | None = None, response: Response | None = None) -> None:
+        user_is_allowed = False
+        if user.role.id in (Role.PATIENT,) or user.is_superuser:
+            user_is_allowed = True
+        else:
+            if request.client.host in settings.ALLOWED_IPS.split(','):
+                user_is_allowed = True
+        await self._update(user, {"is_allowed": user_is_allowed})
+
+
 
 async def get_user_manager(user_db: SQLAlchemyUserDatabase = Depends(get_user_db)):
     yield UserManager(user_db)

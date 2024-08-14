@@ -14,15 +14,23 @@ class RoleOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     
     id: Role
-    name: str
+    name: str 
 
 class UserRead(schemas.BaseUser[uuid.UUID]):
     role: RoleOut
+    is_allowed: bool
+    first_name: str | None
+    last_name: str | None
+    gender: str | None
+    phone_number: str | None
     created_at: datetime
     updated_at: datetime
 
 class UserCreate(schemas.BaseUserCreate):
-    pass
+    first_name: str
+    last_name: str
+    gender: str
+    phone_number: str
 
 class UserUpdate(schemas.BaseUserUpdate):
     pass
@@ -36,6 +44,10 @@ class UserCreateRole(UserCreate):
 class UserCreatePublic(schemas.CreateUpdateDictModel):
     email: EmailStr
     password: str
+    first_name: str
+    last_name: str
+    gender: str
+    phone_number: str
     
 class UserOut(schemas.BaseUser):
     id: int

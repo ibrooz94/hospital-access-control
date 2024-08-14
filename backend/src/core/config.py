@@ -30,7 +30,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     DOMAIN: str = "localhost"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
-
+    ALLOWED_IPS: str = "192.168.1.10,10.0.0.2,127.0.0.1"
+    
     @computed_field  # type: ignore[misc]
     @property
     def SERVER_HOST(self) -> str:

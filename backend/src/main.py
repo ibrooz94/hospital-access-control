@@ -7,10 +7,10 @@ from src.account import routes as user_routes
 from src.authentication import routes as auth_routes
 from src.visit import routes as visit_routes
 from src.appointment import routes as appointment_routes
+from src.record import routes as record_routes
 
 def custom_generate_unique_id(route: APIRoute):
     return f"{route.tags[0]}-{route.name}"
-
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -35,6 +35,7 @@ api_router = APIRouter()
 api_router.include_router(auth_routes.router, prefix="/auth", tags=["auth"])
 api_router.include_router(user_routes.router, prefix="/users", tags=["users"])
 api_router.include_router(appointment_routes.router, prefix="/appointments", tags=["appointment"])
+api_router.include_router(record_routes.router, prefix="/records", tags=["records"])
 api_router.include_router(visit_routes.router, prefix="/visits", tags=["visit"])
 
 

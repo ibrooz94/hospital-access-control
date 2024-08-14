@@ -1,12 +1,12 @@
 import contextlib
 import asyncio
-from typing import AsyncIterator, Any
+from typing import AsyncIterator
 from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import (AsyncConnection, AsyncEngine, AsyncSession,
                                     async_sessionmaker, create_async_engine)
 from sqlalchemy.orm import declarative_base
 
-# fixes psycopg async event loop
+# fixes psycopg async event loop for windows
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy()) 
 
 # fixes alembic foreign key drop constraint issue on downgrades

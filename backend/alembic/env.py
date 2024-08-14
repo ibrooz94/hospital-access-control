@@ -6,7 +6,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-import alembic_postgresql_enum # fixes alembic postgres enum type issue in migrations
+import alembic_postgresql_enum # fixes alembic postgres enum type issue in migrations  # noqa: F401
 
 from src.core.config import settings
 from src.core.models import Base

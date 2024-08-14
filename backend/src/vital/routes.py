@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-from uuid import UUID
 from src.core.dependecies import SessionDep
 from src.account.services import RoleChecker, current_active_user, current_active_superuser
 from src.account.schemas import Role
